@@ -162,6 +162,7 @@ app.get('/api/gpios/:number', userController.ensureAuthenticated,  gpios.get);
 app.get('/api/gpios/:number/dht', userController.ensureAuthenticated,  gpios.getDhtSensor);
 app.get('/api/gpios/:number/analog', userController.ensureAuthenticated,  gpios.getAnalogValue);
 
+
 // React server rendering
 app.use(function(req, res) {
   var initialState = {
