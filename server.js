@@ -151,7 +151,7 @@ app.get('/api/components/luminanceSensor/:id', userController.ensureAuthenticate
 app.delete('/api/components/:id', userController.ensureAuthenticated,  components.remove);
 
 
-app.get('/api/app/ping', userController.ensureAuthenticated, appController.ping);
+app.get('/api/app/ping', appController.ping);
 app.put('/api/gpiosVirtual/:ip/:number', userController.ensureAuthenticated,  gpios.updateVirtualGpio);
 app.post('/api/gpiosVirtual/availables', gpios.getAvailablesGpios);
 app.get('/api/gpios/device', userController.ensureAuthenticated,  gpios.getDeviceGpios);
