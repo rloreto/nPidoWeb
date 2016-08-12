@@ -7,9 +7,9 @@ import { browserHistory } from 'react-router';
 // Sign in with Facebook
 export function facebookLogin() {
   const facebook = {
-    url: 'http://localhost:3000/auth/facebook',
+    url: 'http://rpi3.local/auth/facebook',
     clientId: '980220002068787',
-    redirectUri: 'http://localhost:3000/auth/facebook/callback',
+    redirectUri: 'http://rpi3.local:3000/auth/facebook/callback',
     authorizationUrl: 'https://www.facebook.com/v2.5/dialog/oauth',
     scope: 'email,user_location',
     width: 580,
@@ -29,8 +29,8 @@ export function facebookLogin() {
 // Sign in with Twitter
 export function twitterLogin() {
   const twitter = {
-    url: 'http://localhost:3000/auth/twitter',
-    redirectUri: 'http://localhost:3000/auth/twitter/callback',
+    url: 'http://rpi3.local/auth/twitter',
+    redirectUri: 'http://rpi3.local/auth/twitter/callback',
     authorizationUrl: 'https://api.twitter.com/oauth/authenticate'
   };
 
@@ -48,9 +48,9 @@ export function twitterLogin() {
 // Sign in with Google
 export function googleLogin() {
   const google = {
-    url: 'http://localhost:3000/auth/google',
+    url: 'http://rpi3.local/auth/google',
     clientId: '814958990796-p1centjebv1k0htp3am05tfg5k10nl0k.apps.googleusercontent.com',
-    redirectUri: 'http://localhost:3000/auth/google/callback',
+    redirectUri: 'http://rpi3.local/auth/google/callback',
     authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
     scope: 'openid profile email',
     width: 452,
@@ -70,9 +70,9 @@ export function googleLogin() {
 // Sign in with Github
 export function githubLogin() {
   const github = {
-    url: 'http://localhost:3000/auth/github',
+    url: 'http://rpi3.local/auth/github',
     clientId: 'c8d5bf482c0ece46fa1a',
-    redirectUri: 'http://localhost:3000/auth/github/callback',
+    redirectUri: 'http://rpi3.local/auth/github/callback',
     authorizationUrl: 'https://github.com/login/oauth/authorize',
     scope: 'user:email profile repo',
     width: 452,
@@ -282,4 +282,3 @@ function closePopup({ window, interval }) {
     resolve();
   });
 }
-
