@@ -49,7 +49,7 @@ export function twitterLogin() {
 export function googleLogin() {
   const google = {
     url: 'http://rpi3.local/auth/google',
-    clientId: '814958990796-p1centjebv1k0htp3am05tfg5k10nl0k.apps.googleusercontent.com',
+    clientId: '684827763768-cea5db6se7mfrvq9r5khsnqb32o5vgbj.apps.googleusercontent.com',
     redirectUri: 'http://rpi3.local/auth/google/callback',
     authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
     scope: 'openid profile email',
