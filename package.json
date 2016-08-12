@@ -6,7 +6,7 @@
     "build": "webpack --display-error-details",
     "postinstall": "npm run build",
     "start": "node server.js",
-    "prod": "NODE_ENV=production  MONGOHQ_URL=mongodb://rpi3.local/nPiDo PORT=8080 ./node_modules/.bin/nodemon ./server.js",
+    "prod": "NODE_ENV=production  MONGODB=mongodb://rpi3.local/nPiDo PORT=8080 ./node_modules/.bin/nodemon ./server.js",
     "test": "npm run test:client && npm run test:server",
     "test:client": "mocha test/client --recursive --compilers js:babel-register",
     "test:server": "mocha test/server --recursive --compilers js:babel-register"
