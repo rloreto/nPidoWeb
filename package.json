@@ -5,9 +5,9 @@
   "scripts": {
     "build": "webpack --display-error-details",
     "postinstall": "npm run build",
-    "start": "NODE_ENV=development  TOKEN_SECRET=1234567890 MONGODB=mongodb://rpi3.local/nPiDo PORT=3000 ./node_modules/.bin/nodemon ./server.js",
-    "dev": "NODE_ENV=development  TOKEN_SECRET=1234567890 MONGODB=mongodb://rpi3.local/nPiDo PORT=3000 ./node_modules/.bin/nodemon ./server.js",
-    "prod": "NODE_ENV=production  TOKEN_SECRET=1234567890 MONGODB=mongodb://rpi3.local/nPiDo PORT=80 ./node_modules/.bin/nodemon ./server.js",
+    "start": "NODE_ENV=development ./node_modules/.bin/nodemon ./server.js",
+    "dev": "NODE_ENV=development ./node_modules/.bin/nodemon ./server.js",
+    "prod": "NODE_ENV=production ./node_modules/.bin/nodemon ./server.js",
     "test": "npm run test:client && npm run test:server",
     "test:client": "mocha test/client --recursive --compilers js:babel-register",
     "test:server": "mocha test/server --recursive --compilers js:babel-register"
