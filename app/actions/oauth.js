@@ -4,12 +4,15 @@ import moment from 'moment';
 import cookie from 'react-cookie';
 import { browserHistory } from 'react-router';
 
+const DOMAIN = "10.0.2.21"
+const PORT = "80"
+
 // Sign in with Facebook
 export function facebookLogin() {
   const facebook = {
-    url: 'http://rpi3.local/auth/facebook',
+    url: 'http://'+ DOMAIN + ':' + PORT +'/auth/facebook',
     clientId: '980220002068787',
-    redirectUri: 'http://rpi3.local:3000/auth/facebook/callback',
+    redirectUri: 'http://'+ DOMAIN + ':' + PORT +'/auth/facebook/callback',
     authorizationUrl: 'https://www.facebook.com/v2.5/dialog/oauth',
     scope: 'email,user_location',
     width: 580,
@@ -29,8 +32,8 @@ export function facebookLogin() {
 // Sign in with Twitter
 export function twitterLogin() {
   const twitter = {
-    url: 'http://rpi3.local/auth/twitter',
-    redirectUri: 'http://rpi3.local/auth/twitter/callback',
+    url: 'http://'+ DOMAIN + ':' + PORT +'/auth/twitter',
+    redirectUri: 'http://'+ DOMAIN + ':' + PORT +'/auth/twitter/callback',
     authorizationUrl: 'https://api.twitter.com/oauth/authenticate'
   };
 
@@ -48,9 +51,9 @@ export function twitterLogin() {
 // Sign in with Google
 export function googleLogin() {
   const google = {
-    url: 'http://rpi3.local/auth/google',
+    url: 'http://'+ DOMAIN + ':' + PORT +'/auth/google',
     clientId: '684827763768-cea5db6se7mfrvq9r5khsnqb32o5vgbj.apps.googleusercontent.com',
-    redirectUri: 'http://rpi3.local/auth/google/callback',
+    redirectUri: 'http://'+ DOMAIN + ':' + PORT +'/auth/google/callback',
     authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
     scope: 'openid profile email',
     width: 452,
@@ -70,9 +73,9 @@ export function googleLogin() {
 // Sign in with Github
 export function githubLogin() {
   const github = {
-    url: 'http://rpi3.local/auth/github',
+    url: 'http://'+ DOMAIN + ':' + PORT +'/auth/github',
     clientId: 'c8d5bf482c0ece46fa1a',
-    redirectUri: 'http://rpi3.local/auth/github/callback',
+    redirectUri: 'http://'+ DOMAIN + ':' + PORT +'/auth/github/callback',
     authorizationUrl: 'https://github.com/login/oauth/authorize',
     scope: 'user:email profile repo',
     width: 452,
