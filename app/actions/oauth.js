@@ -4,7 +4,7 @@ import moment from 'moment';
 import cookie from 'react-cookie';
 import { browserHistory } from 'react-router';
 
-const DOMAIN = "10.0.2.21"
+const DOMAIN = "ij7376.myfoscam.org"
 const PORT = "80"
 
 // Sign in with Facebook
