@@ -23,7 +23,8 @@ export function login(email, password) {
             user: json.user
           });
           cookie.save('token', json.token, { expires: moment().add(1, 'hour').toDate() });
-          browserHistory.push('/account');
+          //browserHistory.push('/account');
+          window.location.href = "/";
         });
       } else {
         return response.json().then((json) => {
