@@ -19,7 +19,7 @@ module.exports = {
       uri: "http://" + targetGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + targetGpio.number ,
       resolveWithFullResponse: true,
       headers: {
-        'authorization': 'Bearer ' + token
+        'token': 'Bearer ' + token
       }
     });
 
@@ -79,7 +79,7 @@ module.exports = {
         type: type
       },
       headers: {
-         + token
+         'authorization': 'Bearer ' + token
       }
     })
 
@@ -160,7 +160,7 @@ module.exports = {
           uri: "http://" + out1.ip + ":" + Device.getAppPort() + "/api/gpios/" + out1.number,
           resolveWithFullResponse: true,
           headers: {
-            'authorization': 'Bearer ' + token
+            'token': 'Bearer ' + token
           }
         }).then(function(response) {
           var body = JSON.parse(response.body);
@@ -170,7 +170,7 @@ module.exports = {
             uri: "http://" + out2.ip + ":" + Device.getAppPort() + "/api/gpios/" + out2.number,
             resolveWithFullResponse: true,
             headers: {
-              'authorization': 'Bearer ' + token
+              'token': 'Bearer ' + token
             }
           }).then(function(response) {
             var body = JSON.parse(response.body);
@@ -213,7 +213,7 @@ module.exports = {
                 type: 'inOut'
               },
               headers: {
-                'authorization': 'Bearer ' + token
+                'token': 'Bearer ' + token
               }
             }).then(function(response) {
               console.log("http://" + target2.ip + ":" + Device.getAppPort() + "/api/gpios/" + target2.number + "/action");
@@ -226,7 +226,7 @@ module.exports = {
                   type: 'inOut'
                 },
                 headers: {
-                  'authorization': 'Bearer ' + token
+                  'token': 'Bearer ' + token
                 }
               }).then(function(response) {
                 if (response.statusCode !== 200) {
@@ -304,7 +304,7 @@ module.exports = {
           state: requestState
         },
         headers: {
-          'authorization': 'Bearer ' + token
+          'token': 'Bearer ' + token
         }
       })
       .then(function(response) {
@@ -417,7 +417,7 @@ module.exports = {
       resolveWithFullResponse: true,
       formData: formData,
       headers: {
-        'authorization': 'Bearer ' + token
+        'token': 'Bearer ' + token
       }
     });
 
@@ -450,7 +450,7 @@ module.exports = {
         uri: "http://" + outGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + outGpio.number + '/dht',
         resolveWithFullResponse: true,
         headers: {
-          'authorization': 'Bearer ' + token
+          'token': 'Bearer ' + token
         }
       })
       .then(function(response) {
@@ -481,7 +481,7 @@ module.exports = {
         uri: "http://" + outGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + outGpio.number + '/analog',
         resolveWithFullResponse: true,
         headers: {
-          'authorization': 'Bearer ' + token
+          'token': 'Bearer ' + token
         }
       })
       .then(function(response) {
@@ -507,7 +507,7 @@ module.exports = {
         uri: "http://" + component.gpios[0].ip + ":" + Device.getAppPort() + "/api/gpios/" + component.gpios[0].number,
         resolveWithFullResponse: true,
         headers: {
-          'authorization': 'Bearer ' + token
+          'token': 'Bearer ' + token
         }
       }).then(function(response) {
         var data = JSON.parse(response.body);
@@ -521,7 +521,7 @@ module.exports = {
         uri: "http://" + component.gpios[0].ip + ":" + Device.getAppPort() + "/api/gpios/" + component.gpios[0].number,
         resolveWithFullResponse: true,
         headers: {
-          'authorization': 'Bearer ' + token
+          'token': 'Bearer ' + token
         }
       }).then(function(response) {
         var data = JSON.parse(response.body);
@@ -531,7 +531,7 @@ module.exports = {
           uri: "http://" + component.gpios[1].ip + ":" + Device.getAppPort() + "/api/gpios/" + component.gpios[1].number,
           resolveWithFullResponse: true,
           headers: {
-            'authorization': 'Bearer ' + token
+            'token': 'Bearer ' + token
           }
         }).then(function(response) {
           var data = JSON.parse(response.body);
@@ -548,7 +548,7 @@ module.exports = {
         uri: "http://" + component.gpios[0].ip + ":" + Device.getAppPort() + "/api/gpios/" + component.gpios[0].number,
         resolveWithFullResponse: true,
         headers: {
-          'authorization': 'Bearer ' + token
+          'token': 'Bearer ' + token
         }
       }).then(function(response) {
         var data = JSON.parse(response.body);
@@ -558,7 +558,7 @@ module.exports = {
           uri: "http://" + component.gpios[1].ip + ":" + Device.getAppPort() + "/api/gpios/" + component.gpios[1].number,
           resolveWithFullResponse: true,
           headers: {
-             + token
+             'authorization': 'Bearer ' + token
           }
         }).then(function(response) {
           var data = JSON.parse(response.body);
@@ -568,7 +568,7 @@ module.exports = {
             uri: "http://" + component.gpios[2].ip + ":" + Device.getAppPort() + "/api/gpios/" + component.gpios[2].number,
             resolveWithFullResponse: true,
             headers: {
-               + token
+               'authorization': 'Bearer ' + token
             }
           }).then(function(response) {
             var data = JSON.parse(response.body);
