@@ -4,7 +4,7 @@ var Device = require('./device');
 require('array.prototype.find');
 
 module.exports = {
-  getComponentCurrentState: function*(component){
+  getComponentCurrentState: function*(component, token){
     if (!component) {
       throw new Error('The component is required.');
     }
@@ -17,7 +17,10 @@ module.exports = {
     var result = yield rp({
       method: 'Get',
       uri: "http://" + targetGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + targetGpio.number ,
-      resolveWithFullResponse: true
+      resolveWithFullResponse: true,
+      headers: {
+        'authorization': 'Bearer ' + token
+      }
     });
 
     if (result.statusCode !== 200) {
@@ -37,7 +40,7 @@ module.exports = {
 
     return 0;
   },
-  changeOnOffState: function*(component, state, type) {
+  changeOnOffState: function*(component, state, type, token) {
 
     var outGpio = null;
     var id = null;
@@ -74,6 +77,9 @@ module.exports = {
       formData: {
         state: state,
         type: type
+      },
+      headers: {
+         + token
       }
     })
 
@@ -90,7 +96,7 @@ module.exports = {
 
 
   },
-  changeSwitchState: function(component, state) {
+  changeSwitchState: function(component, state, token) {
     var inGpio = null;
     var outGpio = null;
     var id = null;
@@ -134,7 +140,10 @@ module.exports = {
     return rp({
         method: 'Get',
         uri: "http://" + inGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + inGpio.number,
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
+        headers: {
+          'authorization': 'Bearer ' + token
+        }
       })
       .then(function(response) {
         var body = JSON.parse(response.body);
@@ -149,14 +158,20 @@ module.exports = {
         return rp({
           method: 'Get',
           uri: "http://" + out1.ip + ":" + Device.getAppPort() + "/api/gpios/" + out1.number,
-          resolveWithFullResponse: true
+          resolveWithFullResponse: true,
+          headers: {
+            'authorization': 'Bearer ' + token
+          }
         }).then(function(response) {
           var body = JSON.parse(response.body);
           switchGpio1 = body.gpio;
           return rp({
             method: 'Get',
             uri: "http://" + out2.ip + ":" + Device.getAppPort() + "/api/gpios/" + out2.number,
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
+            headers: {
+              'authorization': 'Bearer ' + token
+            }
           }).then(function(response) {
             var body = JSON.parse(response.body);
             switchGpio2 = body.gpio;
@@ -196,6 +211,9 @@ module.exports = {
               formData: {
                 state: 'off',
                 type: 'inOut'
+              },
+              headers: {
+                'authorization': 'Bearer ' + token
               }
             }).then(function(response) {
               console.log("http://" + target2.ip + ":" + Device.getAppPort() + "/api/gpios/" + target2.number + "/action");
@@ -206,6 +224,9 @@ module.exports = {
                 formData: {
                   state: 'on',
                   type: 'inOut'
+                },
+                headers: {
+                  'authorization': 'Bearer ' + token
                 }
               }).then(function(response) {
                 if (response.statusCode !== 200) {
@@ -223,7 +244,7 @@ module.exports = {
       });
 
   },
-  changeDimmerState: function(component, state) {
+  changeDimmerState: function(component, state, token) {
     var dimmerGpio = null;
     var id = null;
     var requestState;
@@ -281,6 +302,9 @@ module.exports = {
         resolveWithFullResponse: true,
         formData: {
           state: requestState
+        },
+        headers: {
+          'authorization': 'Bearer ' + token
         }
       })
       .then(function(response) {
@@ -294,7 +318,7 @@ module.exports = {
       });
 
   },
-  changeBlindPosition: function*(component, state) {
+  changeBlindPosition: function*(component, state, token) {
 
     var totalMilliseconds = 26 * 1000000;
     var id = null;
@@ -391,7 +415,10 @@ module.exports = {
       method: 'Put',
       uri: "http://" + targetGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + targetGpio.number + "/action",
       resolveWithFullResponse: true,
-      formData: formData
+      formData: formData,
+      headers: {
+        'authorization': 'Bearer ' + token
+      }
     });
 
 
@@ -400,7 +427,7 @@ module.exports = {
   changeSwitchAudio: function() {
 
   },
-  getDhtSensorTemperature: function(component) {
+  getDhtSensorTemperature: function(component, token) {
     var outGpio = null;
     var id = null;
 
@@ -421,14 +448,17 @@ module.exports = {
     return rp({
         method: 'Get',
         uri: "http://" + outGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + outGpio.number + '/dht',
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
+        headers: {
+          'authorization': 'Bearer ' + token
+        }
       })
       .then(function(response) {
         var data = JSON.parse(response.body);
         return data;
       })
   },
-  getLuminanceSensor: function(component) {
+  getLuminanceSensor: function(component, token) {
     var outGpio = null;
     var id = null;
 
@@ -449,7 +479,10 @@ module.exports = {
     return rp({
         method: 'Get',
         uri: "http://" + outGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + outGpio.number + '/analog',
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
+        headers: {
+          'authorization': 'Bearer ' + token
+        }
       })
       .then(function(response) {
         var data = JSON.parse(response.body);
@@ -464,7 +497,7 @@ module.exports = {
   offDimmer: function(id) {
 
   },
-  updateGpiosValues: function(component) {
+  updateGpiosValues: function(component, token) {
 
     var Promise = require('q');
     var actions = [];
@@ -472,7 +505,10 @@ module.exports = {
       return rp({
         method: 'Get',
         uri: "http://" + component.gpios[0].ip + ":" + Device.getAppPort() + "/api/gpios/" + component.gpios[0].number,
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
+        headers: {
+          'authorization': 'Bearer ' + token
+        }
       }).then(function(response) {
         var data = JSON.parse(response.body);
         component.gpios[0].value = data.gpio.value;
@@ -483,14 +519,20 @@ module.exports = {
       return rp({
         method: 'Get',
         uri: "http://" + component.gpios[0].ip + ":" + Device.getAppPort() + "/api/gpios/" + component.gpios[0].number,
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
+        headers: {
+          'authorization': 'Bearer ' + token
+        }
       }).then(function(response) {
         var data = JSON.parse(response.body);
         component.gpios[0].value = data.gpio.value;
         return rp({
           method: 'Get',
           uri: "http://" + component.gpios[1].ip + ":" + Device.getAppPort() + "/api/gpios/" + component.gpios[1].number,
-          resolveWithFullResponse: true
+          resolveWithFullResponse: true,
+          headers: {
+            'authorization': 'Bearer ' + token
+          }
         }).then(function(response) {
           var data = JSON.parse(response.body);
           component.gpios[1].value = data.gpio.value;
@@ -504,21 +546,30 @@ module.exports = {
       return rp({
         method: 'Get',
         uri: "http://" + component.gpios[0].ip + ":" + Device.getAppPort() + "/api/gpios/" + component.gpios[0].number,
-        resolveWithFullResponse: true
+        resolveWithFullResponse: true,
+        headers: {
+          'authorization': 'Bearer ' + token
+        }
       }).then(function(response) {
         var data = JSON.parse(response.body);
         component.gpios[0].value = data.gpio.value;
         return rp({
           method: 'Get',
           uri: "http://" + component.gpios[1].ip + ":" + Device.getAppPort() + "/api/gpios/" + component.gpios[1].number,
-          resolveWithFullResponse: true
+          resolveWithFullResponse: true,
+          headers: {
+             + token
+          }
         }).then(function(response) {
           var data = JSON.parse(response.body);
           component.gpios[1].value = data.gpio.value;
           return rp({
             method: 'Get',
             uri: "http://" + component.gpios[2].ip + ":" + Device.getAppPort() + "/api/gpios/" + component.gpios[2].number,
-            resolveWithFullResponse: true
+            resolveWithFullResponse: true,
+            headers: {
+               + token
+            }
           }).then(function(response) {
             var data = JSON.parse(response.body);
             component.gpios[2].value = data.gpio.value;

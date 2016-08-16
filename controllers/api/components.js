@@ -14,6 +14,7 @@ const wrap = require('co-express');
 var self = {
   getById: wrap(function*(req, res) {
     var id = req.query.id;
+    var token = req.get('token') || req.cookies.token;
     if (!id) {
       res.json(self._getJsonFailedMessage('The id "' + id + '" is required.'));
       return;
@@ -25,7 +26,7 @@ var self = {
       if (!component) {
         throw new Error('The component ' + id + ' not found');
       }
-      var result = yield ComponentActions.updateGpiosValues(component);
+      var result = yield ComponentActions.updateGpiosValues(component, token);
       res.json(result);
     } catch (e) {
       res.json(self._getJsonFailedMessage(e.message));
@@ -35,6 +36,7 @@ var self = {
     var state = req.param('state');
     var type = req.param('type');
     var id = req.param('id');
+    var token = req.get('token') || req.cookies.token;
     if (state !== 'on' && state !== 'off') {
       res.json(self._getJsonFailedMessage('The state should be "on" or "off"'));
     }
@@ -44,7 +46,7 @@ var self = {
     }
 
     try {
-      var result = yield self._changeOnOffState(id, state, 'socket', 1, type==='hight'?'out01':'out10');
+      var result = yield self._changeOnOffState(token, id, state, 'socket', 1, type==='hight'?'out01':'out10');
       res.json(result);
     } catch (e) {
       res.json(self._getJsonFailedMessage(e.message));
@@ -53,13 +55,13 @@ var self = {
   dimmer: wrap(function*(req, res) {
     var state = req.param('state');
     var id = req.param('id');
-
+    var token = req.get('token') || req.cookies.token;
     if (state !== 'on' && state !== 'off' && state !== 'change' && state !== 'start' && state !== 'stop' && state !== 'low' && state !== 'mediun' && state !== 'hight') {
       res.json(self._getJsonFailedMessage('The state should be "on","off","change","start","stop","low","mediun" or "hight"'));
     }
 
     try {
-      var result = yield self._changeOnOffState(id, state, 'dimmer', 1);
+      var result = yield self._changeOnOffState(token, id, state, 'dimmer', 1);
       res.json(result);
     } catch (e) {
       res.json(self._getJsonFailedMessage(e.message));
@@ -68,13 +70,13 @@ var self = {
   switch: wrap(function*(req, res) {
     var state = req.param('state');
     var id = req.param('id');
-
+    var token = req.get('token') || req.cookies.token;
     if (state !== 'on' && state !== 'off') {
       res.json(self._getJsonFailedMessage('The state should be "on" or "off"'));
     }
 
     try {
-      var result = yield self._changeOnOffState(id, state, 'switch', 3);
+      var result = yield self._changeOnOffState(token, id, state, 'switch', 3);
       res.json(result);
     } catch (e) {
       res.json(self._getJsonFailedMessage(e.message));
@@ -83,14 +85,14 @@ var self = {
   switchBlind: wrap(function*(req, res) {
     var state = req.param('state');
     var id = req.param('id');
-
+    var token = req.get('token') || req.cookies.token;
     if (state !== 'up' && state !== 'down' && state !== 'upStart' && state !== 'upStop' && state !== 'downStart' && state !== 'downStop' && state !== '0' && state !== '25' && state !== '50' && state !== '75' && state !== '100') {
       res.json(self._getJsonFailedMessage('The state should be "up", "down", "upStart",  "upStop", "downStart", "downStop", "0", "25", "50", "75" or "100"'));
     }
 
     try {
       var component = yield Component.findOne({_id: id}).populate('gpios').exec();
-      var result = yield ComponentActions.changeBlindPosition(component, state);
+      var result = yield ComponentActions.changeBlindPosition(component, state, token);
       component = yield Component.findOne({_id: id}).populate('gpios').exec();
       res.json(component);
     } catch (e) {
@@ -100,12 +102,12 @@ var self = {
   switchAudio: wrap(function*(req, res) {
     var state = req.param('state');
     var id = req.param('id');
-
+    var token = req.get('token') || req.cookies.token;
     if (state !== 'on' && state !== 'off') {
       res.json(self._getJsonFailedMessage('The state should be "on" or "off"'));
     }
     try {
-      var result = yield self._changeOnOffState(id, state, 'switchAudio', 1, 'out01');
+      var result = yield self._changeOnOffState(token, id, state, 'switchAudio', 1, 'out01');
       res.json(result);
     } catch (e) {
       res.json(self._getJsonFailedMessage(e.message));
@@ -116,9 +118,9 @@ var self = {
   },
   temperatureSensor: wrap(function*(req, res) {
     var id = req.param('id');
-
+    var token = req.get('token') || req.cookies.token;
     try {
-      var result = yield self._changeOnOffState(id, state, 'temperatureSensor', 1);
+      var result = yield self._changeOnOffState(token, id, state, 'temperatureSensor', 1);
       res.json(result);
     } catch (e) {
       res.json(self._getJsonFailedMessage(e.message));
@@ -127,15 +129,16 @@ var self = {
   }),
   luminanceSensor: wrap(function*(req, res) {
     var id = req.param('id');
+    var token = req.get('token') || req.cookies.token;
     try {
-      var result = yield self._changeOnOffState(id, state, 'luminanceSensor', 1);
+      var result = yield self._changeOnOffState(token, id, state, 'luminanceSensor', 1);
       res.json(result);
     } catch (e) {
       res.json();
     }
 
   }),
-  _changeOnOffState: function*(id, state, requestedType, gpioNumber, type) {
+  _changeOnOffState: function*(token, id, state, requestedType, gpioNumber, type) {
     type = type || 'inOut';
     var component = yield Component.findOne({
       _id: id
@@ -154,15 +157,16 @@ var self = {
       return self._getJsonFailedMessage('The number of gpios fos the component with id:"' + id + '"should be "' + gpioNumber + '".');
     }
 
-    return yield ComponentActions.changeOnOffState(component, state, type);
+    return yield ComponentActions.changeOnOffState(component, state, type, token);
   },
   get: wrap(function*(req, res) {
     var filter = req.params.filter || {};
+    var token = req.get('token') || req.cookies.token;
     try {
       var components = yield Component.find(filter).populate('gpios').exec();
 
       yield self._asyncEach(components, function*(component, i) {
-        component.value = yield ComponentActions.getComponentCurrentState(component);
+        component.value = yield ComponentActions.getComponentCurrentState(component, token);
       })
       res.json(components);
     } catch (e) {
@@ -183,6 +187,7 @@ var self = {
     var number1Type = 'digital';
     var number2Type = 'digital';
     var number3Type = 'digital';
+    var token = req.get('token');
 
     if (obj.number1Type) {
       number1Type = obj.number1Type;
@@ -226,7 +231,7 @@ var self = {
           });
           return;
         }
-        self._createSocket(gpios)
+        self._createSocket(gpios, token)
           .catch(function(e) {
             res.json({
               status: 'failed',
@@ -249,7 +254,7 @@ var self = {
         	res.json({ status: 'failed', error: 'The "{number2:<number2>}" is required.'});
         	return;
         }*/
-        self._createDimmer(gpios)
+        self._createDimmer(gpios, token)
           .catch(function(e) {
             res.json({
               status: 'failed',
@@ -268,7 +273,7 @@ var self = {
           });
           return;
         }
-        self._createTestAC(gpios)
+        self._createTestAC(gpios, token)
           .catch(function(e) {
             res.json({
               status: 'failed',
@@ -287,7 +292,7 @@ var self = {
           });
           return;
         }
-        self._createTemperatureSensor(gpios)
+        self._createTemperatureSensor(gpios, token)
           .catch(function(e) {
             res.json({
               status: 'failed',
@@ -306,7 +311,7 @@ var self = {
           });
           return;
         }
-        self._createMovementSensor(gpios)
+        self._createMovementSensor(gpios, token)
           .catch(function(e) {
             res.json({
               status: 'failed',
@@ -339,7 +344,7 @@ var self = {
           });
           return;
         }
-        self._createSwitch(gpios)
+        self._createSwitch(gpios, token)
           .catch(function(e) {
             res.json({
               status: 'failed',
@@ -365,7 +370,7 @@ var self = {
           });
           return;
         }
-        self._createSwitchBlind(gpios)
+        self._createSwitchBlind(gpios, token)
           .catch(function(e) {
             res.json({
               status: 'failed',
@@ -394,7 +399,7 @@ var self = {
 
 
 
-        self._createLuminanceSensor(gpios)
+        self._createLuminanceSensor(gpios, token)
           .catch(function(e) {
             res.json({
               status: 'failed',
@@ -413,7 +418,7 @@ var self = {
           });
           return;
         }
-        self._createSwitchAudio(gpios)
+        self._createSwitchAudio(gpios, token)
           .catch(function(e) {
             res.json({
               status: 'failed',
@@ -429,6 +434,7 @@ var self = {
   },
   remove: wrap(function*(req, res) {
     var id = req.params.id;
+
     if (!id) {
       res.json(self._getJsonFailedMessage('The id "' + id + '" is required.'));
       return;
@@ -458,8 +464,8 @@ var self = {
     }
   }),
   //{ip, number1, number2}
-  _createSwitch: function(obj) {
-    return self._createComponentGpio('switch', obj.name, obj.ip, {
+  _createSwitch: function(obj, token) {
+    return self._createComponentGpio(token, 'switch', obj.name, obj.ip, {
       number: obj.number1,
       direction: 'out',
       type: 'digital',
@@ -477,8 +483,8 @@ var self = {
     });
   },
   //{ip, number1, number2}
-  _createSwitchBlind: function(obj) {
-    return self._createComponentGpio('switchBlind', obj.name, obj.ip, {
+  _createSwitchBlind: function(obj, token) {
+    return self._createComponentGpio(token, 'switchBlind', obj.name, obj.ip, {
       number: obj.number1,
       direction: 'out',
       type: 'digital',
@@ -491,17 +497,17 @@ var self = {
     });
   },
   //{ip, number1}
-  _createSwitchAudio: function(obj) {
-    return self._createComponentGpio('switchAudio', obj.name, obj.ip, {
+  _createSwitchAudio: function(obj, token) {
+    return self._createComponentGpio(token, 'switchAudio', obj.name, obj.ip, {
       number: obj.number1,
       direction: 'out',
       type: 'digital'
     });
   },
   //{ip, number1}
-  _createDimmer: function(obj) {
+  _createDimmer: function(obj, token) {
     //return self._createComponentGpio('dimmer', obj.name, obj.ip, {number: obj.number1, direction:'out', type: 'digital', action: 'dimmer'}, {number: obj.number2, direction:'in', type: 'digital', action: 'testAC'});
-    return self._createComponentGpio('dimmer', obj.name, obj.ip, {
+    return self._createComponentGpio(token, 'dimmer', obj.name, obj.ip, {
       number: obj.number1,
       direction: 'out',
       type: 'digital',
@@ -509,16 +515,16 @@ var self = {
     });
   },
   //{ip, number1}
-  _createSocket: function(obj) {
-    return self._createComponentGpio('socket', obj.name, obj.ip, {
+  _createSocket: function(obj, token) {
+    return self._createComponentGpio(token, 'socket', obj.name, obj.ip, {
       number: obj.number1,
       direction: 'out',
       type: 'digital'
     });
   },
   //{ip, number1}
-  _createTestAC: function(obj) {
-    return self._createComponentGpio('testAC', obj.name, obj.ip, {
+  _createTestAC: function(obj, token) {
+    return self._createComponentGpio(token, 'testAC', obj.name, obj.ip, {
       number: obj.number1,
       direction: 'in',
       type: 'digital',
@@ -526,28 +532,28 @@ var self = {
     });
   },
   //{ip, number1}
-  _createTemperatureSensor: function(obj) {
-    return self._createComponentGpio('temperatureSensor', obj.name, obj.ip, {
+  _createTemperatureSensor: function(obj, token) {
+    return self._createComponentGpio(token, 'temperatureSensor', obj.name, obj.ip, {
       number: obj.number1,
       direction: 'out',
       type: 'digital'
     });
   },
-  _createMotionSensor: function(obj) {
-    return self._createComponentGpio('motionSensor', obj.name, obj.ip, {
+  _createMotionSensor: function(obj, token) {
+    return self._createComponentGpio(token, 'motionSensor', obj.name, obj.ip, {
       number: obj.number1,
       direction: 'out',
       type: 'digital'
     });
   },
-  _createLuminanceSensor: function(obj) {
-    return self._createComponentGpio('luminanceSensor', obj.name, obj.ip, {
+  _createLuminanceSensor: function(obj, token) {
+    return self._createComponentGpio(token, 'luminanceSensor', obj.name, obj.ip, {
       number: obj.number1,
       direction: 'out',
       type: 'analog'
     });
   },
-  _createComponentGpio: function(componentType, name, ip, gpio1, gpio2, gpio3) {
+  _createComponentGpio: function(token, componentType, name, ip, gpio1, gpio2, gpio3) {
 
 
     var componentId;
