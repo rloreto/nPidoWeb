@@ -5,8 +5,8 @@
   "scripts": {
     "build": "webpack --display-error-details",
     "postinstall": "npm run build",
-    "start": "NODE_ENV=development ./node_modules/.bin/nodemon ./server.js",
-    "dev": "NODE_ENV=development ./node_modules/.bin/nodemon ./server.js",
+    "start": "NODE_ENV=development PORT=80 ./node_modules/.bin/nodemon  ./server.js",
+    "dev": "NODE_ENV=development ./node_modules/.bin/nodemon --debug ./server.js",
     "prod": "NODE_ENV=production ./node_modules/.bin/nodemon ./server.js",
     "test": "npm run test:client && npm run test:server",
     "test:client": "mocha test/client --recursive --compilers js:babel-register",
