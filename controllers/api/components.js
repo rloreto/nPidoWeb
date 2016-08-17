@@ -12,9 +12,17 @@ const Gpio = mongoose.model('Gpio');
 const wrap = require('co-express');
 
 var self = {
+  _getAuthToken: function(req){
+    var authHeader = req.get('authorization');
+    if(authHeader) {
+      return authHeader.split(' ')[1];
+    } else {
+      return req.cookies.token;
+    }
+  },
   getById: wrap(function*(req, res) {
     var id = req.query.id;
-    var token = req.get('authorization') || req.cookies.token;
+    var token = self._getAuthToken(req);
     if (!id) {
       res.json(self._getJsonFailedMessage('The id "' + id + '" is required.'));
       return;
@@ -36,7 +44,7 @@ var self = {
     var state = req.param('state');
     var type = req.param('type');
     var id = req.param('id');
-    var token = req.get('authorization') || req.cookies.token;
+    var token = self._getAuthToken(req);
     if (state !== 'on' && state !== 'off') {
       res.json(self._getJsonFailedMessage('The state should be "on" or "off"'));
     }
@@ -55,7 +63,7 @@ var self = {
   dimmer: wrap(function*(req, res) {
     var state = req.param('state');
     var id = req.param('id');
-    var token = req.get('authorization') || req.cookies.token;
+    var token = self._getAuthToken(req);
     if (state !== 'on' && state !== 'off' && state !== 'change' && state !== 'start' && state !== 'stop' && state !== 'low' && state !== 'mediun' && state !== 'hight') {
       res.json(self._getJsonFailedMessage('The state should be "on","off","change","start","stop","low","mediun" or "hight"'));
     }
@@ -70,7 +78,7 @@ var self = {
   switch: wrap(function*(req, res) {
     var state = req.param('state');
     var id = req.param('id');
-    var token = req.get('authorization') || req.cookies.token;
+    var token = self._getAuthToken(req);
     if (state !== 'on' && state !== 'off') {
       res.json(self._getJsonFailedMessage('The state should be "on" or "off"'));
     }
@@ -85,7 +93,7 @@ var self = {
   switchBlind: wrap(function*(req, res) {
     var state = req.param('state');
     var id = req.param('id');
-    var token = req.get('authorization') || req.cookies.token;
+    var token = self._getAuthToken(req);
     if (state !== 'up' && state !== 'down' && state !== 'upStart' && state !== 'upStop' && state !== 'downStart' && state !== 'downStop' && state !== '0' && state !== '25' && state !== '50' && state !== '75' && state !== '100') {
       res.json(self._getJsonFailedMessage('The state should be "up", "down", "upStart",  "upStop", "downStart", "downStop", "0", "25", "50", "75" or "100"'));
     }
@@ -102,7 +110,7 @@ var self = {
   switchAudio: wrap(function*(req, res) {
     var state = req.param('state');
     var id = req.param('id');
-    var token = req.get('authorization') || req.cookies.token;
+    var token = self._getAuthToken(req);
     if (state !== 'on' && state !== 'off') {
       res.json(self._getJsonFailedMessage('The state should be "on" or "off"'));
     }
@@ -118,7 +126,7 @@ var self = {
   },
   temperatureSensor: wrap(function*(req, res) {
     var id = req.param('id');
-    var token = req.get('authorization') || req.cookies.token;
+    var token = self._getAuthToken(req);
     try {
       var result = yield self._changeOnOffState(token, id, state, 'temperatureSensor', 1);
       res.json(result);
@@ -129,7 +137,7 @@ var self = {
   }),
   luminanceSensor: wrap(function*(req, res) {
     var id = req.param('id');
-    var token = req.get('authorization') || req.cookies.token;
+    var token = self._getAuthToken(req);
     try {
       var result = yield self._changeOnOffState(token, id, state, 'luminanceSensor', 1);
       res.json(result);
@@ -160,8 +168,9 @@ var self = {
     return yield ComponentActions.changeOnOffState(component, state, type, token);
   },
   get: wrap(function*(req, res) {
+    debugger;
     var filter = req.params.filter || {};
-    var token = req.get('authorization') || req.cookies.token;
+    var token = self._getAuthToken(req);
     try {
       var components = yield Component.find(filter).populate('gpios').exec();
 
