@@ -168,7 +168,6 @@ var self = {
     return yield ComponentActions.changeOnOffState(component, state, type, token);
   },
   get: wrap(function*(req, res) {
-    debugger;
     var filter = req.params.filter || {};
     var token = self._getAuthToken(req);
     try {
