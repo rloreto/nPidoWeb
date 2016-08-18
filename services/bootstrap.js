@@ -38,7 +38,7 @@ var self = {
         json: true
       });
       var token = responseLogin.body.token;
-      console.log(token);
+
 
       var switchComponents = yield Component.find({
         type: 'switch'
@@ -87,7 +87,6 @@ var self = {
                              'authorization': 'Bearer ' + token
                           }
                         });
-                        console.log(responseActon);
                         completeRequest++;
                         break;
                       } else {
