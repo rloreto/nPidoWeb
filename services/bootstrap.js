@@ -27,6 +27,19 @@ var self = {
       name: hostname
     }).exec();
     if (masterDevice) {
+      var responseLogin = yield rp({
+        method: 'POST',
+        uri: "http://" + hostname + "/login" ,
+        resolveWithFullResponse: true,
+        body: {
+          email: process.env.SYSTEM_EMAIL,
+          password:  process.env.SYSTEM_PWD
+        },
+        json: true
+      });
+      var token = responseLogin.body.token;
+      console.log(token);
+
       var switchComponents = yield Component.find({
         type: 'switch'
       }).populate('gpios').exec();
@@ -42,21 +55,26 @@ var self = {
 
             completeRequest = 0;
             errorRequest = 0;
+
             for (var i = 0; i < switchComponents.length; i++) {
               var component = switchComponents[i];
               if (component.gpios) {
                 for (var k = 0; k < component.gpios.length; k++) {
                   if (component.gpios[k].action === 'switch') {
                     try {
-                      console.log( "http://" + component.gpios[k].ip + ":" + DeviceService.getAppPort() + "/api/gpios/" + component.gpios[k].number);
+
                       var response = yield rp({
                         method: 'Get',
                         uri: "http://" + component.gpios[k].ip + ":" + DeviceService.getAppPort() + "/api/gpios/" + component.gpios[k].number,
-                        resolveWithFullResponse: true
+                        resolveWithFullResponse: true,
+                        headers: {
+                           'authorization': 'Bearer ' + token
+                        }
                       });
                       var data = JSON.parse(response.body);
                       var gpio = data.gpio;
                       if (gpio.mode === 'in') {
+                        console.log( "http://" + component.gpios[k].ip + ":" + DeviceService.getAppPort() + "/api/gpios/" + component.gpios[k].number);
                         var responseActon = yield rp({
                           method: 'Put',
                           uri: "http://" + component.gpios[k].ip + ":" + DeviceService.getAppPort() + "/api/gpios/" + component.gpios[k].number + "/action",
@@ -64,8 +82,12 @@ var self = {
                           formData: {
                             state: 'on',
                             type: 'inOut'
+                          },
+                          headers: {
+                             'authorization': 'Bearer ' + token
                           }
                         });
+                        console.log(responseActon);
                         completeRequest++;
                         break;
                       } else {
@@ -74,7 +96,7 @@ var self = {
                       }
 
                     } catch (e) {
-                      //console.log(e.message);
+                      console.log(e);
                     }
                   }
                 }
