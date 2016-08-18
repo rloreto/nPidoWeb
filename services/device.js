@@ -108,7 +108,7 @@ module.exports = {
       resolveWithFullResponse: true
     }).then(function(response){
       var gpios = JSON.parse(response.body);
-      console.log(gpios);
+
       return Promise.all(gpios.map(function(gpio){
         return new Promise(function(resolve, reject) {
           Gpio.findOne({ ip: ip, number: gpio.number}, function(err, found){
@@ -148,7 +148,6 @@ module.exports = {
             var address = interfaces[k][k2];
             if (address.family === 'IPv4' && !address.internal) {
                 addresses.push(address.address);
-                console.log(address);
             }
         }
     }

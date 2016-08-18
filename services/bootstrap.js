@@ -22,11 +22,14 @@ var self = {
     var hostname = os.hostname();
     console.log('Device ip: ' + ip);
     console.log('Device hostname: ' + hostname);
+    if(hostname.indexOf('.local')<0){
+      hostname += '.local'
+    }
     var masterDevice = yield Device.find({
       isMaster: true,
-      name: hostname + '.local'
+      name: hostname 
     }).exec();
-    if (masterDevice) {
+    if (masterDevice.length>0) {
       var responseLogin = yield rp({
         method: 'POST',
         uri: "http://" + hostname + "/login" ,
