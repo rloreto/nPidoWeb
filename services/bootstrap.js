@@ -27,7 +27,7 @@ var self = {
     }
     var masterDevice = yield Device.find({
       isMaster: true,
-      name: hostname 
+      name: hostname
     }).exec();
     if (masterDevice.length>0) {
       var responseLogin = yield rp({
@@ -82,14 +82,17 @@ var self = {
                           method: 'Put',
                           uri: "http://" + component.gpios[k].ip + ":" + DeviceService.getAppPort() + "/api/gpios/" + component.gpios[k].number + "/action",
                           resolveWithFullResponse: true,
-                          formData: {
+                          body: {
                             state: 'on',
                             type: 'inOut'
                           },
+                          json: true,
                           headers: {
                              'authorization': 'Bearer ' + token
                           }
                         });
+                        var data1 = esponseActon.body;
+                        console.log(data1);
                         completeRequest++;
                         break;
                       } else {
