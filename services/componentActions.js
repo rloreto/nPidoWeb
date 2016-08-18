@@ -74,7 +74,7 @@ module.exports = {
       method: 'Put',
       uri: "http://" + outGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + outGpio.number + "/action",
       resolveWithFullResponse: true,
-      formData: {
+      body: {
         state: state,
         type: type
       },
@@ -208,7 +208,7 @@ module.exports = {
               method: 'Put',
               uri: "http://" + target1.ip + ":" + Device.getAppPort() + "/api/gpios/" + target1.number + "/action",
               resolveWithFullResponse: true,
-              formData: {
+              body: {
                 state: 'off',
                 type: 'inOut'
               },
@@ -221,7 +221,7 @@ module.exports = {
                 method: 'Put',
                 uri: "http://" + target2.ip + ":" + Device.getAppPort() + "/api/gpios/" + target2.number + "/action",
                 resolveWithFullResponse: true,
-                formData: {
+                body: {
                   state: 'on',
                   type: 'inOut'
                 },
@@ -300,7 +300,7 @@ module.exports = {
         method: 'Put',
         uri: "http://" + dimmerGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + dimmerGpio.number + "/action",
         resolveWithFullResponse: true,
-        formData: {
+        body: {
           state: requestState
         },
         headers: {
@@ -415,7 +415,7 @@ module.exports = {
       method: 'Put',
       uri: "http://" + targetGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + targetGpio.number + "/action",
       resolveWithFullResponse: true,
-      formData: formData,
+      body: formData,
       headers: {
         'authorization': 'Bearer ' + token
       }
