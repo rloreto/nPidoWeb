@@ -69,18 +69,18 @@ module.exports = {
       throw new Error('Almost one "out-gpio" is required by the component with id:"' + id + '".');
     }
 
-
     var result = yield rp({
       method: 'Put',
       uri: "http://" + outGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + outGpio.number + "/action",
       resolveWithFullResponse: true,
-      body: JSON.stringify({
+      body: {
         state: state,
         type: type
-      }),
+      },
       headers: {
          'authorization': 'Bearer ' + token
-      }
+      },
+      json: true
     })
 
     if (result.statusCode !== 200) {
@@ -208,32 +208,34 @@ module.exports = {
               method: 'Put',
               uri: "http://" + target1.ip + ":" + Device.getAppPort() + "/api/gpios/" + target1.number + "/action",
               resolveWithFullResponse: true,
-              body: JSON.stringify({
+              body: {
                 state: 'off',
                 type: 'inOut'
-              }),
+              },
               headers: {
                 'authorization': 'Bearer ' + token
-              }
+              },
+              json: true
             }).then(function(response) {
               console.log("http://" + target2.ip + ":" + Device.getAppPort() + "/api/gpios/" + target2.number + "/action");
               return rp({
                 method: 'Put',
                 uri: "http://" + target2.ip + ":" + Device.getAppPort() + "/api/gpios/" + target2.number + "/action",
                 resolveWithFullResponse: true,
-                body: JSON.stringify({
+                body: {
                   state: 'on',
                   type: 'inOut'
-                }),
+                },
                 headers: {
                   'authorization': 'Bearer ' + token
-                }
+                },
+                json: true
               }).then(function(response) {
                 if (response.statusCode !== 200) {
-                  throw new Error("Failed 'onSocker' in " + id + " component.");
+                  throw new Error("Failed 'changeSwitchState' in " + id + " component.");
                 }
                 if (response.body.status === 'failed') {
-                  throw new Error("Failed 'onSocker' in " + id + " component.");
+                  throw new Error("Failed 'changeSwitchState' in " + id + " component.");
                 }
                 return response.body.status;
               });
@@ -300,12 +302,13 @@ module.exports = {
         method: 'Put',
         uri: "http://" + dimmerGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + dimmerGpio.number + "/action",
         resolveWithFullResponse: true,
-        body: JSON.stringify({
+        body: {
           state: requestState
-        }),
+        },
         headers: {
           'authorization': 'Bearer ' + token
-        }
+        },
+        json: true
       })
       .then(function(response) {
         if (response.statusCode !== 200) {
@@ -415,12 +418,12 @@ module.exports = {
       method: 'Put',
       uri: "http://" + targetGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + targetGpio.number + "/action",
       resolveWithFullResponse: true,
-      body: JSON.stringify(formData),
+      body: formData,
       headers: {
         'authorization': 'Bearer ' + token
-      }
+      },
+      json: true
     });
-
 
     return result.body;
   },
