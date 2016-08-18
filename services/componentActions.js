@@ -74,10 +74,10 @@ module.exports = {
       method: 'Put',
       uri: "http://" + outGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + outGpio.number + "/action",
       resolveWithFullResponse: true,
-      body: {
+      body: JSON.stringify({
         state: state,
         type: type
-      },
+      }),
       headers: {
          'authorization': 'Bearer ' + token
       }
@@ -208,10 +208,10 @@ module.exports = {
               method: 'Put',
               uri: "http://" + target1.ip + ":" + Device.getAppPort() + "/api/gpios/" + target1.number + "/action",
               resolveWithFullResponse: true,
-              body: {
+              body: JSON.stringify({
                 state: 'off',
                 type: 'inOut'
-              },
+              }),
               headers: {
                 'authorization': 'Bearer ' + token
               }
@@ -221,10 +221,10 @@ module.exports = {
                 method: 'Put',
                 uri: "http://" + target2.ip + ":" + Device.getAppPort() + "/api/gpios/" + target2.number + "/action",
                 resolveWithFullResponse: true,
-                body: {
+                body: JSON.stringify({
                   state: 'on',
                   type: 'inOut'
-                },
+                }),
                 headers: {
                   'authorization': 'Bearer ' + token
                 }
@@ -300,9 +300,9 @@ module.exports = {
         method: 'Put',
         uri: "http://" + dimmerGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + dimmerGpio.number + "/action",
         resolveWithFullResponse: true,
-        body: {
+        body: JSON.stringify({
           state: requestState
-        },
+        }),
         headers: {
           'authorization': 'Bearer ' + token
         }
@@ -415,7 +415,7 @@ module.exports = {
       method: 'Put',
       uri: "http://" + targetGpio.ip + ":" + Device.getAppPort() + "/api/gpios/" + targetGpio.number + "/action",
       resolveWithFullResponse: true,
-      body: formData,
+      body: JSON.stringify(formData),
       headers: {
         'authorization': 'Bearer ' + token
       }
