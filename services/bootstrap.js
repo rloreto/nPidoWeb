@@ -24,7 +24,7 @@ var self = {
     console.log('Device hostname: ' + hostname);
     var masterDevice = yield Device.find({
       isMaster: true,
-      name: hostname
+      name: hostname + '.local'
     }).exec();
     if (masterDevice) {
       var responseLogin = yield rp({
