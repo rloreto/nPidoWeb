@@ -58,7 +58,7 @@ module.exports = {
 
     if (state !== 'on' && state !== 'off' && state !== 'onDimmer' && state !== 'offDimmer' &&
           state !== 'onoff' && state !== 'start' && state !== 'stop' && state !== 'low' && state !== 'mediun' && state !== 'hight') {
-      throw new Error('The state should be "on","off","onDimmer","offDimmer","change","start","stop","low","mediun" or "hight"';);
+      throw new Error('The state should be "on","off","onDimmer","offDimmer","change","start","stop","low","mediun" or "hight"');
     }
 
     outGpio = component.gpios.find(function(gpio) {
