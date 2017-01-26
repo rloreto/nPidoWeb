@@ -64,8 +64,20 @@ var self = {
     var state = req.param('state');
     var id = req.param('id');
     var token = self._getAuthToken(req);
+
     if (state !== 'on' && state !== 'off' && state !== 'change' && state !== 'start' && state !== 'stop' && state !== 'low' && state !== 'mediun' && state !== 'hight') {
       res.json(self._getJsonFailedMessage('The state should be "on","off","change","start","stop","low","mediun" or "hight"'));
+    }
+
+    if(state === 'on'){
+      state = 'onDimmer';
+    }
+    if(state === 'off'){
+      state = 'onDimmer';
+    }
+
+    if(state === 'change'){
+      state = 'onoff';
     }
 
     try {
