@@ -180,9 +180,9 @@ var self = {
       var result='';
       var socketAudio = yield Component.findOne(criteria).populate('gpios').exec();
       if(activeSwithAudio.length>0){
-        yield self._changeOnOffState(token, socketAudio._id, 'on', 'socket', 1, 'out01');
+        yield self._changeOnOffState(token, socketAudio._id, 'on', 'socket', 1, 'out10');
       } else {
-        yield self._changeOnOffState(token, socketAudio._id, 'off', 'socket', 1, 'out01');
+        yield self._changeOnOffState(token, socketAudio._id, 'off', 'socket', 0, 'out10');
       }
 
       res.json(result);
