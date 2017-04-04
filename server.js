@@ -150,6 +150,7 @@ app.get('/api/components/temperatureSensor/:id', userController.ensureAuthentica
 app.get('/api/components/luminanceSensor/:id', userController.ensureAuthenticated,  components.luminanceSensor);
 app.delete('/api/components/:id', userController.ensureAuthenticated,  components.remove);
 
+app.get('/api/test', userController.ensureAuthenticated,  components.test);
 
 app.get('/api/app/ping', appController.ping);
 app.put('/api/gpiosVirtual/:ip/:number', userController.ensureAuthenticated,  gpios.updateVirtualGpio);

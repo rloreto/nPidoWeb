@@ -20,6 +20,40 @@ var self = {
       return req.cookies.token;
     }
   },
+  test: wrap(function*(req, res) {
+    var id = req.query.id;
+    var token = self._getAuthToken(req);
+
+    try {
+
+      var criteria = {'type': 'switchAudio'}
+      var components = yield Component.find(criteria).populate('gpios').exec();
+
+      yield self._asyncEach(components, function*(component, i) {
+        component.value = yield ComponentActions.getComponentCurrentState(component, token);
+      })
+
+      var activeSwithAudio  = components.filter(function(component){
+        return component.value === 1;
+      })
+
+      criteria = {'group': 'Audio', 'type':'socket'}
+      var result='';
+      var socketAudio = yield Component.findOne(criteria).populate('gpios').exec();
+      if(activeSwithAudio.length>0){
+        result = yield self._changeOnOffState(token, socketAudio._id, 'on', 'socket', 1, 'out01');
+      } else {
+        result = yield self._changeOnOffState(token, socketAudio._id, 'off', 'socket', 1, 'out01');
+      }
+
+      res.json(result);
+
+
+  
+    } catch (e) {
+      res.json(self._getJsonFailedMessage(e.message));
+    }
+  }),
   getById: wrap(function*(req, res) {
     var id = req.query.id;
     var token = self._getAuthToken(req);
@@ -126,8 +160,31 @@ var self = {
     if (state !== 'on' && state !== 'off') {
       res.json(self._getJsonFailedMessage('The state should be "on" or "off"'));
     }
+    
     try {
       var result = yield self._changeOnOffState(token, id, state, 'switchAudio', 1, 'out01');
+
+      //Check if there is a audioSwith enable or not and change the audio scket state
+      var criteria = {'type': 'switchAudio'}
+      var components = yield Component.find(criteria).populate('gpios').exec();
+
+      yield self._asyncEach(components, function*(component, i) {
+        component.value = yield ComponentActions.getComponentCurrentState(component, token);
+      })
+
+      var activeSwithAudio  = components.filter(function(component){
+        return component.value === 1;
+      })
+
+      criteria = {'group': 'Audio', 'type':'socket'}
+      var result='';
+      var socketAudio = yield Component.findOne(criteria).populate('gpios').exec();
+      if(activeSwithAudio.length>0){
+        yield self._changeOnOffState(token, socketAudio._id, 'on', 'socket', 1, 'out01');
+      } else {
+        yield self._changeOnOffState(token, socketAudio._id, 'off', 'socket', 1, 'out01');
+      }
+
       res.json(result);
     } catch (e) {
       res.json(self._getJsonFailedMessage(e.message));
