@@ -88,6 +88,9 @@ var self = {
     }
 
     try {
+      console.log(id);
+        console.log(state);
+          console.log(type==='hight'?'out01':'out10');
       var result = yield self._changeOnOffState(token, id, state, 'socket', 1, type==='hight'?'out01':'out10');
       res.json(result);
     } catch (e) {
@@ -180,9 +183,11 @@ var self = {
       var result='';
       var socketAudio = yield Component.findOne(criteria).populate('gpios').exec();
       if(activeSwithAudio.length>0){
+        console.log('on');
         yield self._changeOnOffState(token, socketAudio._id, 'on', 'socket', 1, 'out10');
       } else {
-        yield self._changeOnOffState(token, socketAudio._id, 'off', 'socket', 0, 'out10');
+        console.log('off');
+        yield self._changeOnOffState(token, socketAudio._id, 'off', 'socket', 1, 'out10');
       }
 
       res.json(result);

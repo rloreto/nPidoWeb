@@ -8,6 +8,9 @@ const Device = mongoose.model('Device');
 const Component = mongoose.model('Component');
 const suspend = require('suspend');
 var os = require("os");
+var fs = require('fs')
+var hapPath = '/Users/roberto/Documents/Source/HAP-NodeJS';
+//var hapPath = '/home/pi/HAP-NodeJS';
 
 
 var self = {
@@ -29,6 +32,9 @@ var self = {
       isMaster: true,
       name: hostname
     }).exec();
+
+    this.buildHomeKit();
+    /*
     if (masterDevice.length>0) {
       var responseLogin = yield rp({
         method: 'POST',
@@ -122,8 +128,34 @@ var self = {
         }, 5 * 1000);
       }
     }
+    */
+  },
+  buildHomeKit: function(){
+    var self= this;
+    suspend(function*() {
+      var self= this;
+      var components = yield Component.find({}).populate('gpios').exec();
+      debugger;
 
+      components.forEach(function(component){
+
+        var file = hapPath+'/templates/'+component.type+'.js';
+        var mac = component.mac.split(':').join('-');
+        if(fs.existsSync(file)){
+          var content = fs.readFileSync(file, 'utf8');
+          content = content.replace('###name###', component.name);
+          content = content.replace('###mac###', mac);
+          content = content.replace('###componentid###', component._id);
+          var accessoryFile = hapPath+'/accessories/'+mac+'_accessory.js'
+          fs.writeFileSync(accessoryFile, content, 'utf8');
+          console.log('Created or updated '+ accessoryFile);
+        }
+      })
+
+
+    })();
   }
+  
 }
 
 module.exports = self;

@@ -22,6 +22,7 @@ const ComponentSchema = new Schema({
   type: { type : String, enum: ['switch', 'dimmer', 'socket', 'switchBlind', 'switchAudio', 'temperatureSensor','motionSensor', 'luminanceSensor', 'testAC'] },
   name: { type : String, default : '', trim : true },
   currentState: { type : String, default : '', trim : true },
+  mac: { type : String, default : '', trim : true },
   value: { type : Number, default : 0},
   gpios  : [{ type: Schema.Types.ObjectId, ref: 'Gpio' }]
 });
