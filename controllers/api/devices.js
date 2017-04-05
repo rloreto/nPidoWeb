@@ -8,6 +8,7 @@
 
  const mongoose = require('mongoose');
  mongoose.Promise = require('bluebird');
+ require('../../models/device');
  const Device = mongoose.model('Device');
 
 module.exports = {
