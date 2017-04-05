@@ -19,7 +19,6 @@ var sass = require('node-sass-middleware');
 var webpack = require('webpack');
 var config = require('./webpack.config');
 const wrap = require('co-express');
-const bootstrap = require('./services/bootstrap');
 const devices = require('./controllers/api/devices');
 const components = require('./controllers/api/components');
 const gpios = require('./controllers/api/gpios');
@@ -202,7 +201,6 @@ if (app.get('env') === 'production') {
 
 app.listen(app.get('port'), wrap(function*() {
   console.log('Express server listening on port ' + app.get('port'));
-  yield bootstrap.init();
 }));
 
 module.exports = app;
