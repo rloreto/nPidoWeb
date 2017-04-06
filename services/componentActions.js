@@ -4,6 +4,31 @@ var Device = require('./device');
 require('array.prototype.find');
 
 module.exports = {
+  getComponent: function*(id, token){
+    if (!id) {
+      throw new Error('The id is required.');
+    }
+    if (!token) {
+      throw new Error('The token is required.');
+    }
+    var result = yield rp({
+      method: 'Get',
+      uri: "http://" + Device.getIp() + ":" + Device.getAppPort() + "/api/components/" + id ,
+      resolveWithFullResponse: true,
+      headers: {
+        'authorization': 'Bearer ' + token
+      }
+    });
+    if (result.statusCode !== 200) {
+    throw new Error("Failed 'onSocker' in " + id + " component.");
+    }
+    if (result.body.status === 'failed') {
+      throw new Error("Failed 'onSocker' in " + id + " component.");
+    }
+    var component =JSON.parse(result.body);
+
+    return component
+  },
   getComponentCurrentState: function*(component, token){
     if (!component) {
       throw new Error('The component is required.');
@@ -13,6 +38,14 @@ module.exports = {
       throw new Error('Almost one gpio is required by the component with id:"' + component.id + '".');
     }
     var targetGpio = component.gpios[0];
+
+
+    inGpio = component.gpios.filter(function(gpio) {
+      return gpio.direction === 'in';
+    })
+    if(inGpio.length>0){
+      targetGpio = inGpio[0];
+    }
 
     var result = yield rp({
       method: 'Get',
@@ -34,14 +67,11 @@ module.exports = {
     if(component.type==='socket'){
       return !resultObj.gpio.value;
     }
-    if(component.type==='switchAudio'){
-      return (resultObj.gpio.value===1)? 1:0;
-    }
-
-    return 0;
+    return resultObj.gpio.value;
   },
   changeOnOffState: function*(component, state, type, token) {
 
+    var inGpio = null;
     var outGpio = null;
     var id = null;
     var formatData = {
@@ -61,6 +91,7 @@ module.exports = {
       throw new Error('The state should be "on","off","onDimmer","offDimmer","change","start","stop","low","mediun" or "hight"');
     }
 
+
     outGpio = component.gpios.find(function(gpio) {
       return gpio.direction === 'out';
     })
@@ -69,6 +100,8 @@ module.exports = {
     if (!outGpio) {
       throw new Error('Almost one "out-gpio" is required by the component with id:"' + id + '".');
     }
+
+
 
     var result = yield rp({
       method: 'Put',
@@ -84,18 +117,18 @@ module.exports = {
       json: true
     })
 
+
     if (result.statusCode !== 200) {
       throw new Error("Failed 'onSocker' in " + id + " component.");
     }
     if (result.body.status === 'failed') {
       throw new Error("Failed 'onSocker' in " + id + " component.");
     }
-
-    component.value = (state === 'on'?1:0);
+    if(state==='onoff')
+    {
+      component.value  = (component.value === 0)?1:0;
+    }
     return component;
-    //return result.body;
-
-
   },
   changeSwitchState: function(component, state, token) {
     var inGpio = null;

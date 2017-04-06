@@ -54,22 +54,38 @@ var self = {
       res.json(self._getJsonFailedMessage(e.message));
     }
   }),
+  get: wrap(function*(req, res) {
+    var filter = req.params.filter || {};
+    var token = self._getAuthToken(req);
+    try {
+      var components = yield Component.find(filter).populate('gpios').exec();
+
+      yield self._asyncEach(components, function*(component, i) {
+        component.value = yield ComponentActions.getComponentCurrentState(component, token);
+      })
+      res.json(components);
+    } catch (e) {
+      res.json(self._getJsonFailedMessage(e.message));
+    }
+  }),
   getById: wrap(function*(req, res) {
-    var id = req.query.id;
+    var id = req.param('id');
     var token = self._getAuthToken(req);
     if (!id) {
       res.json(self._getJsonFailedMessage('The id "' + id + '" is required.'));
       return;
     }
     try {
+
+      
       var component = yield Component.findOne({
-        id: id
+        _id: id
       }).populate('gpios').exec();
       if (!component) {
         throw new Error('The component ' + id + ' not found');
       }
-      var result = yield ComponentActions.updateGpiosValues(component, token);
-      res.json(result);
+      component.value = yield ComponentActions.getComponentCurrentState(component, token);
+      res.json(component);
     } catch (e) {
       res.json(self._getJsonFailedMessage(e.message));
     }
@@ -117,9 +133,9 @@ var self = {
       state = 'onoff';
     }
 
-    try {
-      var result = yield self._changeOnOffState(token, id, state, 'dimmer', 1);
-      res.json(result);
+    try {  
+      component = yield self._changeOnOffState(token, id, state, 'dimmer', 2);
+      res.json(component);
     } catch (e) {
       res.json(self._getJsonFailedMessage(e.message));
     }
@@ -222,9 +238,8 @@ var self = {
   }),
   _changeOnOffState: function*(token, id, state, requestedType, gpioNumber, type) {
     type = type || 'inOut';
-    var component = yield Component.findOne({
-      _id: id
-    }).populate('gpios').exec();
+
+    var component = yield ComponentActions.getComponent(id,token);
 
     if (!component) {
       return self._getJsonFailedMessage('The component' + id + ' not found');
@@ -241,20 +256,6 @@ var self = {
 
     return yield ComponentActions.changeOnOffState(component, state, type, token);
   },
-  get: wrap(function*(req, res) {
-    var filter = req.params.filter || {};
-    var token = self._getAuthToken(req);
-    try {
-      var components = yield Component.find(filter).populate('gpios').exec();
-
-      yield self._asyncEach(components, function*(component, i) {
-        component.value = yield ComponentActions.getComponentCurrentState(component, token);
-      })
-      res.json(components);
-    } catch (e) {
-      res.json(self._getJsonFailedMessage(e.message));
-    }
-  }),
   _asyncEach:function* (array, fn) {
    for (var i = 0; i < array.length; i++) yield fn(array[i], i);
   },
@@ -332,10 +333,12 @@ var self = {
           });
           return;
         }
-        /*if(!number2){
-        	res.json({ status: 'failed', error: 'The "{number2:<number2>}" is required.'});
+        if(!number2){
+        	res.json({ 
+            status: 'failed', 
+            error: 'The "{number2:<number2>}" is required.'});
         	return;
-        }*/
+        }
         self._createDimmer(gpios, token)
           .catch(function(e) {
             res.json({
@@ -594,6 +597,11 @@ var self = {
       direction: 'out',
       type: 'digital',
       action: 'dimmer'
+    },{
+      number: obj.number2, 
+      direction:'in', 
+      type: 'digital', 
+      action: 'testAC'
     });
   },
   //{ip, number1}
