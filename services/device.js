@@ -100,12 +100,15 @@ var gpiosRpiBRev1 = [
 ];
 
 module.exports = {
-  register: function(ip, port) {
+  register: function(ip, port, token) {
 
     return rp({
       method: 'Get',
       uri: 'http://' + ip + ':'+ port +'/api/gpios/device' ,
-      resolveWithFullResponse: true
+      resolveWithFullResponse: true,
+      headers: {
+        'authorization': 'Bearer ' + token
+      }
     }).then(function(response){
       var gpios = JSON.parse(response.body);
 
