@@ -12,17 +12,17 @@
  const Device = mongoose.model('Device');
 
 module.exports = {
-			_getAuthToken: function(req){
-				var authHeader = req.get('authorization');
-				if(authHeader) {
-					return authHeader.split(' ')[1];
-				} else {
-					return req.cookies.token;
-				}
-			},
       join: function(req, res){
         var port= DeviceService.getAppPort(req);
-        var ip = req.body.ip;
+				var ip = req.body.ip;
+				var authHeader = req.get('authorization');
+				var token = '';
+				if(authHeader) {
+					token = authHeader.split(' ')[1];
+				} else {
+					token = req.cookies.token;
+				}
+
       	var name = req.body.ip;
       		if(!ip){
       			res.json({ status: 'failed', error: 'The "{ip:'<ip>'}" is required.'});
@@ -41,7 +41,8 @@ module.exports = {
 
     		})
     		.then(function(){
-    			return DeviceService.register(ip, port, this._getAuthToken());
+
+    			return DeviceService.register(ip, port, token);
     		})
     		.catch(function(e){
     			res.json({ status: 'failed', error: e.message});
