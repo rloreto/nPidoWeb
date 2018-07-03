@@ -104,9 +104,11 @@ var self = {
     }
 
     try {
-      console.log(id);
+      if (process.env.DEBUG === "*") {
+        console.log(id);
         console.log(state);
-          console.log(type==='hight'?'out01':'out10');
+        console.log(type==='hight'?'out01':'out10');
+      }
       var result = yield self._changeOnOffState(token, id, state, 'socket', 1, type==='hight'?'out01':'out10');
       res.json(result);
     } catch (e) {

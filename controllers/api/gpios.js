@@ -70,7 +70,9 @@ var self = {
     });
   },
   changeState: function(req, res) {
-    console.log('begin changeState');
+    if (process.env.DEBUG === "*") {
+      console.log('begin changeState');
+    }
     var type = 'inOut';
     var GpioObj = self._getGpoObj();
     var lowTime = 7500000;
@@ -87,7 +89,9 @@ var self = {
     if (reqType && reqType !== 'inOut' && reqType !== 'in01' && reqType !== 'out01' && reqType !== 'out10') {
       errorMessage = 'The type should be "inOut", "in01", "out10" or "out01"';
       console.log(errorMessage);
-      console.log('end changeState');
+      if (process.env.DEBUG === "*") {
+        console.log('end changeState');
+      }
       return res.json({
         status: 'failed',
         message: errorMessage
@@ -109,7 +113,9 @@ var self = {
     if (!number) {
       errorMessage = 'The "number" is required.';
       console.log(errorMessage);
-      console.log('end changeState');
+      if (process.env.DEBUG === "*") {
+        console.log('end changeState');
+      }
       return res.json({
         status: 'failed',
         message: errorMessage
@@ -119,7 +125,9 @@ var self = {
     var error = self._checkNumber(number);
     if (error) {
       console.log(error.message);
-      console.log('end changeState');
+      if (process.env.DEBUG === "*") {
+        console.log('end changeState');
+      }
       return res.json(error);
     }
 
@@ -301,8 +309,9 @@ var self = {
       console.log(e);
       console.log('end changeState');
     }
-
-    console.log('end changeState');
+    if (process.env.DEBUG === "*") {
+      console.log('end changeState');
+    }
     return res.json({
       status: 'ok',
       gpio: {
@@ -314,14 +323,18 @@ var self = {
 
   },
   set: function(req, res) {
-    console.log('begin setGpio');
+    if (process.env.DEBUG === "*") {
+      console.log('begin setGpio');
+    }
     var GpioObj = self._getGpoObj();
     var errorMessage;
     var number = req.param('number');
     var error = self._checkNumber(number);
     if (error) {
       console.log(error.message);
-      console.log('end setGpio');
+      if (process.env.DEBUG === "*") {
+        console.log('end setGpio');
+      }
       return res.json(error);
     }
 
@@ -338,7 +351,9 @@ var self = {
       if (value !== '1' && value !== '0') {
         errorMessage = 'The value should be "1" or "0"';
         console.log(errorMessage);
-        console.log('end setGpio');
+        if (process.env.DEBUG === "*") {
+          console.log('end setGpio');
+        }
         return res.json({
           status: 'failed',
           message: errorMessage
@@ -355,27 +370,36 @@ var self = {
       try {
         var gpio = new GpioObj(number, direction);
         gpio.writeSync(value);
-        console.log('+set(' + direction + ') gpio' + number + ' to ' + value);
+        if (process.env.DEBUG === "*") {
+          console.log('+set(' + direction + ') gpio' + number + ' to ' + value);
+        }
 
 
       } catch (e) {
         console.log(e);
-        console.log('end setGpio');
+        if (process.env.DEBUG === "*") {
+          console.log('end setGpio');
+        }
       }
     } else {
       try {
         var gpioForRead = new GpioObj(number, direction);
         value = gpioForRead.readSync(value);
-        console.log('+get(' + direction + ') gpio' + number + ' -> ' + value);
+        if (process.env.DEBUG === "*") {
+          console.log('+get(' + direction + ') gpio' + number + ' -> ' + value);
+        }
 
       } catch (e) {
         console.log(e);
-        console.log('end setGpio');
+        if (process.env.DEBUG === "*") {
+          console.log('end setGpio');
+        }
       }
     }
 
-
-    console.log('end setGpio');
+    if (process.env.DEBUG === "*") {
+      console.log('end setGpio');
+    }
     return res.json({
       status: 'ok',
       gpio: {
@@ -392,13 +416,18 @@ var self = {
     var error = self._checkNumber(number);
     if (error) {
       console.log(error.message);
-      console.log('end get');
+      if (process.env.DEBUG === "*") {
+        console.log('end get');
+      }
       return res.json(error);
     }
     Device.getGpioInfo(number).then(function(gpio) {
-      console.log('+the gpio ' + number + ': ');
-      console.log(gpio);
-      console.log('end get');
+      if (process.env.DEBUG === "*") {
+        console.log('+the gpio ' + number + ': ');
+        console.log(gpio);
+        console.log('end get');
+      }
+
       return res.json({
         status: 'ok',
         gpio: gpio
@@ -406,12 +435,16 @@ var self = {
     });
   },
   getDhtSensor: function(req, res) {
-    console.log('start getDhtSensor');
+    if (process.env.DEBUG === "*") {
+      console.log('start getDhtSensor');
+    }
     var number = parseInt(req.param('number'));
     var error = self._checkNumber(number);
     if (error) {
       console.log(error.message);
-      console.log('end getDhtSensor');
+      if (process.env.DEBUG === "*") {
+        console.log('end getDhtSensor');
+      }
       return res.json(error);
     }
     var sensorLib = require('node-dht-sensor');
@@ -427,10 +460,13 @@ var self = {
           counter = counter + 1;
         } while (readout && readout.temperature <= 0 && counter < 1000);
 
-        console.log('Temperature: ' + readout.temperature.toFixed(2) + 'C, ' +
+        if (process.env.DEBUG === "*") {
+          console.log('Temperature: ' + readout.temperature.toFixed(2) + 'C, ' +
           'humidity: ' + readout.humidity.toFixed(2) + '%');
-
-        console.log('end getDhtSensor');
+        }
+        if (process.env.DEBUG === "*") {
+          console.log('end getDhtSensor');
+        }
         return res.json({
           temperature: readout.temperature,
           humidity: readout.humidity
@@ -441,7 +477,9 @@ var self = {
       sensor.read();
     } else {
       console.warn('Failed to initialize sensor');
-      console.log('end getDhtSensor');
+      if (process.env.DEBUG === "*") {
+        console.log('end getDhtSensor');
+      }
     }
   },
   getAnalogValue: function(req, res) {
@@ -526,8 +564,9 @@ var self = {
 
       var gpio = new GpioObj(number, 'out');
       gpio.writeSync(_value);
-      console.log('+set gpio' + number + 'to direction "out" and value ' + _value);
-
+      if (process.env.DEBUG === "*") {
+        console.log('+set gpio' + number + 'to direction "out" and value ' + _value);
+      }
     } catch (e) {
       console.log(e);
       return e;
@@ -563,7 +602,9 @@ var self = {
 
       var gpio = new GpioObj(number, 'out');
       gpio.writeSync(value);
-      console.log('+set gpio' + number + ' to ' + value);
+      if (process.env.DEBUG === "*") {
+        console.log('+set gpio' + number + ' to ' + value);
+      }
 
     } catch (e) {
       console.log(e);
